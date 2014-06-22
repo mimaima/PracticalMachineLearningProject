@@ -55,7 +55,7 @@ tr = trainSet[inTrain, ]
 cv = trainSet[-inTrain, ]
 mFit = train(classe ~ ., data = tr, method = mthd, verbose = FALSE)
 result <- predict(mFit, cv)
-confusionMatrix(result, cv$classe)
+print(confusionMatrix(result, cv$classe))
 mFit
 }
 ```
@@ -77,5 +77,18 @@ print(paste0("end time: ", date()))
 ```
 Here is the final answers, reportedly 100% accuracy rate on the final outcome.
 ```{r}
- print(predict(mFit, pmltest))
+result <- predict(mFit, pmltest)
+print(result)
+```
+Finally write each test case's result into a text file under answers folder for submission.
+```{r}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+setwd("~/CoursesR/Practical Machine Learning/answers")
+pml_write_files(result)
 ```
