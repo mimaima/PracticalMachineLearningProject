@@ -144,7 +144,7 @@ library(caret)</code></pre>
 <pre class="r"><code>library(gbm)</code></pre>
 <pre><code>## Loaded gbm 2.1</code></pre>
 <pre class="r"><code>print(paste0(&quot;start time: &quot;, date()))</code></pre>
-<pre><code>## [1] &quot;start time: Sun Jun 22 16:55:29 2014&quot;</code></pre>
+<pre><code>## [1] &quot;start time: Sun Jun 22 14:55:29 2014&quot;</code></pre>
 <pre class="r"><code>mFit = model(&quot;gbm&quot;, pmltrain)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
@@ -178,7 +178,7 @@ library(caret)</code></pre>
 ## Detection Prevalence    0.287    0.190    0.178    0.163    0.181
 ## Balanced Accuracy       0.996    0.982    0.994    0.989    0.990</code></pre>
 <pre class="r"><code>print(paste0(&quot;end time: &quot;, date()))</code></pre>
-<pre><code>## [1] &quot;end time: Sun Jun 22 17:35:34 2014&quot;</code></pre>
+<pre><code>## [1] &quot;end time: Sun Jun 22 15:35:34 2014&quot;</code></pre>
 <p>Here is the final answers, reportedly 100% accuracy rate on the final outcome.</p>
 <pre class="r"><code>result &lt;- predict(mFit, pmltest)
 print(result)</code></pre>
