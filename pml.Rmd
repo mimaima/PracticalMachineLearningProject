@@ -1,0 +1,81 @@
+---
+title: "Human Activity Recognition Analysis"
+output: html_document
+---
+
+### Summary
+In this report, a machine learning algorithm "Gradient Boosting Machine (gbm)" is applied on the Human Activity Recognition dataset provided by Groupware. Confusion Matrix Table shows the gbm method scored over 98% accuracy rate. The answer on the 20 test cases is right with 100% accuracy rate.
+
+### 1. Introduction
+Six persons performed barbell lifts exercise in five different fashions: exactly according to the specification (Class A), throwing the elbows to the front (Class B), lifting the dumbbell only halfway (Class C), lowering the dumbbell only halfway (Class D) and throwing the hips to the front (Class E). Class A corresponds to the specified execution of the exercise, while the other 4 classes correspond to common mistakes. 
+
+The goal of the project is to predict the manner in which they did the exercise. 
+
+### 2. Getting and cleaning data
+```{r}
+setwd("~/CoursesR/Practical Machine Learning")
+pmltrain = read.csv("pml-training.csv")
+pmltest = read.csv("pml-testing.csv")
+print(c(dim(pmltrain), dim(pmltest)))
+```
+
+There are 19622 observations of 160 variables in the original training set and 20 observations of 160 variables in the original testing set. Many of variables are always 'NA' and many of variables are useless to achieve the project goal. First of all,  all of those variables in the training set and test set are removed.
+```{r}
+for (i in dim(pmltest)[2]:1) {
+    if (sum(is.na(pmltest[, i])) == dim(pmltest)[1]) {
+        pmltest[, i] <- NULL
+        pmltrain[, i] <- NULL
+    }
+}
+pmltrain[, 6] = pmltest[, 6] = NULL
+pmltrain[, 5] = pmltest[, 5] = NULL
+pmltrain[, 4] = pmltest[, 4] = NULL
+pmltrain[, 3] = pmltest[, 3] = NULL
+pmltrain[, 1] = pmltest[, 1] = NULL
+
+print(c(dim(pmltrain), dim(pmltest)))
+```
+
+The cleaned new data have 19622 observations of 55 variables in the training set and 20 observations of 55 variables in the testing set.
+```{r}
+print(names(pmltrain))
+```
+
+### 3. Prediction model
+There are a lot of common machine learning algorithms which can be used to solve this project's problem, such as Random Forests(rf), Gradient Boosting Machine(gbm), Bagging with trees(treebag), Logistic Regression with Boosting(LogitBoost) and Support Vector Machine with Polynomial(svmPoly), etc.
+
+In order to try differents algorithms without change too much codes, a *model* function is used to take method name and a data set as input parameters.
+
+The data splited into a training set and a cross validation (CV) set, 80% and 20% accordingly, then build a model on the training set, make predictions for data records in the CV set, report confusion Matrix result, and return the model.
+```{r}
+set.seed(345)
+model = function(mthd, trainSet) {
+inTrain = createDataPartition(y = trainSet$classe, p = 0.8, list = FALSE)
+tr = trainSet[inTrain, ]
+cv = trainSet[-inTrain, ]
+mFit = train(classe ~ ., data = tr, method = mthd, verbose = FALSE)
+result <- predict(mFit, cv)
+confusionMatrix(result, cv$classe)
+mFit
+}
+```
+
+### 4.Result
+Take gbm method for example, 80% of training set is used for training and 20% is used for validation for the out-of-sample accuracy estimate. Gbm method scored 98.5254% accuracy. The whole program took about 42 minutes to finish.
+```{r}
+library(lattice)
+library(ggplot2)
+library(splines)
+library(survival)
+library(parallel)
+library(plyr)
+library(caret)
+library(gbm)
+print(paste0("start time: ", date()))
+mFit = model("gbm", pmltrain)
+print(paste0("end time: ", date()))
+```
+Here is the final answers, reportedly 100% accuracy rate on the final outcome.
+```{r}
+ print(predict(mFit, pmltest))
+```
